@@ -40,7 +40,7 @@ import static org.ballerinalang.debugger.test.utils.DebugTestRunner.VariableScop
  * Test class for variable visibility.
  */
 
-@Test(enabled = false)
+@Test
 public class VariableVisibilityTest extends BaseTestCase {
 
     Pair<BallerinaTestDebugPoint, StoppedEventArguments> debugHitInfo;
@@ -537,17 +537,17 @@ public class VariableVisibilityTest extends BaseTestCase {
     }
 
     // Need to be enabled after fixing https://github.com/ballerina-platform/ballerina-lang/issues/43636
-    @Test(description = "Worker related variable visibility test", enabled = false)
+    @Test(description = "Worker related variable visibility test")
     public void workerVariableVisibilityTest() throws BallerinaTestException {
         String testProjectName = "worker-tests";
         String testModuleFileName = "main.bal";
         debugTestRunner = new DebugTestRunner(testProjectName, testModuleFileName, true);
 
-        debugTestRunner.addBreakPoint(new BallerinaTestDebugPoint(debugTestRunner.testEntryFilePath, 23));
-        debugTestRunner.addBreakPoint(new BallerinaTestDebugPoint(debugTestRunner.testEntryFilePath, 31));
+        debugTestRunner.addBreakPoint(new BallerinaTestDebugPoint(debugTestRunner.testEntryFilePath, 22));
+        debugTestRunner.addBreakPoint(new BallerinaTestDebugPoint(debugTestRunner.testEntryFilePath, 28));
         debugTestRunner.initDebugSession(DebugUtils.DebuggeeExecutionKind.RUN);
-        Pair<BallerinaTestDebugPoint, StoppedEventArguments> debugHitInfo = debugTestRunner.waitForDebugHit(25000);
-        if (debugHitInfo.getKey().getLine() == 23) {
+        Pair<BallerinaTestDebugPoint, StoppedEventArguments> debugHitInfo = debugTestRunner.waitForDebugHit(30000);
+        if (debugHitInfo.getKey().getLine() == 22) {
             // variable visibility test inside worker (only worker's variables should be visible)
             localVariables = debugTestRunner.fetchVariables(debugHitInfo.getRight(),
                     DebugTestRunner.VariableScope.LOCAL);
@@ -559,16 +559,16 @@ public class VariableVisibilityTest extends BaseTestCase {
             debugHitInfo = debugTestRunner.waitForDebugHit(10000);
             localVariables = debugTestRunner.fetchVariables(debugHitInfo.getRight(),
                     DebugTestRunner.VariableScope.LOCAL);
-            debugTestRunner.assertVariable(localVariables, "w1", "future<()>", "future");
-            Assert.assertTrue(localVariables.containsKey("a"));
+            debugTestRunner.assertVariable(localVariables, "z", "10", "int");
+            Assert.assertTrue(localVariables.containsKey("y"));
         } else {
             // variable visibility test for workers outside fork (workers are visible outside fork() as futures).
             localVariables = debugTestRunner.fetchVariables(debugHitInfo.getRight(),
                     DebugTestRunner.VariableScope.LOCAL);
-            debugTestRunner.assertVariable(localVariables, "w1", "future<()>", "future");
-            Assert.assertTrue(localVariables.containsKey("a"));
+            debugTestRunner.assertVariable(localVariables, "z", "10", "int");
+            Assert.assertTrue(localVariables.containsKey("y"));
             debugTestRunner.resumeProgram(debugHitInfo.getRight(), DebugTestRunner.DebugResumeKind.NEXT_BREAKPOINT);
-            debugHitInfo = debugTestRunner.waitForDebugHit(10000);
+            debugHitInfo = debugTestRunner.waitForDebugHit(30000);
             localVariables = debugTestRunner.fetchVariables(debugHitInfo.getRight(),
                     DebugTestRunner.VariableScope.LOCAL);
             debugTestRunner.assertVariable(localVariables, "x", "10", "int");
