@@ -387,7 +387,7 @@ public class DAPRequestManager {
         THREADS(2000),
         STACK_TRACE(7000),
         SCOPES(2000),
-        VARIABLES(30000),
+        VARIABLES(60000),
         EVALUATE(20000),
         COMPLETIONS(10000),
         STEP_OVER(5000),
