@@ -183,7 +183,13 @@ public class BArrayType extends BType implements ArrayType, TypeWithShape {
             sb.append(arrayElement.getSizeString());
             tempElementType = arrayElement.elementType;
         }
-        sb.insert(0, tempElementType);
+        String elementTypeString = tempElementType.toString();
+        if ((tempElementType.getTag() == TypeTags.UNION_TAG || tempElementType.getTag() == TypeTags.FINITE_TYPE_TAG)
+                && elementTypeString.contains("|")
+                && !(elementTypeString.startsWith("(") && elementTypeString.endsWith(")"))) {
+            elementTypeString = "(" + elementTypeString + ")";
+        }
+        sb.insert(0, elementTypeString);
         return !readonly ? sb.toString() : sb.append(" & readonly").toString();
     }
 
